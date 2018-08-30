@@ -66,22 +66,9 @@ function main($argv)
 
             pnotice("Guard stoped by %s\n", $method);
 
-            $ret = run_cmd('./io.php relay_set sbio2 1 1');
-            pnotice("enable power containers: %s\n", $ret['log']);
-
-            $ret = run_cmd('./io.php relay_set sbio1 2 1');
-            pnotice("enable power RP: %s\n", $ret['log']);
-
             // open all padlocks
             $ret = run_cmd('./padlock.php open');
             pnotice("open all padlocks: %s\n", $ret['log']);
-
-            /* enable lighter if night */
-            $day_night = get_day_night();
-            if ($day_night == 'night') {
-                $ret = run_cmd('./street_light.php enable');
-                pnotice("enable lighter: %s\n", $ret['log']);
-            }
 
             $state_id = db()->insert('guard_states',
                                     ['state' => 'sleep',
@@ -127,12 +114,6 @@ function main($argv)
 
             pnotice("Guard started by %s\n", $method);
 
-            $ret = run_cmd('./io.php relay_set sbio2 1 0');
-            pnotice("disable power containers: %s\n", $ret['log']);
-
-            $ret = run_cmd('./io.php relay_set sbio1 2 0');
-            pnotice("disable power RP: %s\n", $ret['log']);
-
             // close all padlocks
             $ret = run_cmd('./padlock.php close');
             perror("close all padlocks: %s\n", $ret['log']);
@@ -162,12 +143,6 @@ function main($argv)
                     $text .= $zone['name'] . ' ';
                 run_cmd(sprintf('./text_spech.php \'%s\' 0', $text));
                 player_start(['sounds/text.wav'], 75);
-            }
-
-            /* disable lighter if this disable */
-            if (conf_guard()['light_mode'] != 'auto') {
-                $ret = run_cmd('./street_light.php disable 2');
-                perror("disable lighter: %s\n", $ret['log']);
             }
 
             $ignore_zones_list_id = [];

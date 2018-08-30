@@ -37,12 +37,12 @@ function main($argv)
     case 'alarm':
         $alarm_id = $argv[2];
         // copy images to sr38.org
-        $ret = run_cmd(sprintf('scp %s/%d_*.jpeg stelhs@sr38.org:/storage/www/plato/alarm_img/',
+        $ret = run_cmd(sprintf('scp %s/%d_*.jpeg stelhs@sr38.org:/storage/www/plato_marazm/alarm_img/',
                                conf_guard()['alarm_snapshot_dir'], $alarm_id));
         perror("scp to sr38.org: %s\n", $ret['log']);
 
         foreach (conf_guard()['video_cameras'] as $cam) {
-            $ret = run_cmd(sprintf("./telegram.php msg_send_all 'Камера %d:\n http://sr38.org/plato/alarm_img/%d_cam_%d.jpeg'",
+            $ret = run_cmd(sprintf("./telegram.php msg_send_all 'Камера %d:\n http://sr38.org/plato_marazm/alarm_img/%d_cam_%d.jpeg'",
                                    $cam['id'], $alarm_id, $cam['id']));
             perror("send URL to telegram: %s\n", $ret['log']);
         }
@@ -50,7 +50,7 @@ function main($argv)
 
     case 'current':
         $chat_id = isset($argv[2]) ? $argv[2] : 0;
-        $content = file_get_contents('http://sr38.org/plato/?no_view');
+        $content = file_get_contents('http://sr38.org/plato_marazm/?no_view');
         $ret = json_decode($content, true);
         if ($ret === NULL) {
             $rc = -1;

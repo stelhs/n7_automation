@@ -42,52 +42,6 @@ function sms_send($type, $recepient, $args = array())
         $sms_text = $args;
         break;
 
-    case 'lighting_on':
-        $sms_text = sprintf("Освещение %s включено.", $args['name']);
-        break;
-
-    case 'lighting_off':
-        $sms_text = sprintf("Освещение %s отключено.", $args['name']);
-        break;
-
-    case 'mdadm':
-        switch ($args['mode']) {
-        case "resync":
-            $raid_stat = "синхронизируется " . $args['progress'] . '%';
-            break;
-
-        case "recovery":
-            $raid_stat = "восстанавливается " . $args['progress'] . '%';
-            break;
-
-        case "damage":
-            $raid_stat = "поврежден!";
-            break;
-
-        case "normal":
-            $raid_stat = "восстановлен!";
-            break;
-
-        case "no_exist":
-        default:
-            return;
-        }
-
-        $sms_text = sprintf("RAID1: %s", $raid_stat);
-        break;
-
-    case 'external_power':
-        switch ($args['mode']) {
-        case "on":
-            $sms_text = "Внешнее питание восстановлено";
-            break;
-
-        case "off":
-            $sms_text = "Отключено внешнее питание";
-            break;
-        }
-        break;
-
     case 'alarm':
         $sms_text = sprintf("Внимание!\nСработала %s, событие: %d",
                                 $args['zone'], $args['action_id']);
@@ -107,11 +61,6 @@ function sms_send($type, $recepient, $args = array())
 
         if (isset($args['global_status']))
             $sms_text .= $args['global_status'];
-        break;
-
-    case 'inet_switch':
-        $sms_text = sprintf("Интернет переключен на модем %d",
-                            $args['modem_num']);
         break;
 
     default:
@@ -160,55 +109,6 @@ function telegram_send($type, $args = array())
         $text = sprintf("Сервер ушел на перезагрузку по запросу %s", $args['method']);
         break;
 
-    case 'lighting_on':
-        $text = sprintf("Освещение %s включено.", $args['name']);
-        break;
-
-    case 'lighting_off':
-        $text = sprintf("Освещение %s отключено.", $args['name']);
-        break;
-
-    case 'mdadm':
-        switch ($args['mode']) {
-        case "resync":
-            $raid_stat = "синхронизируется " . $args['progress'] . '%';
-            break;
-
-        case "recovery":
-            $raid_stat = "восстанавливается " . $args['progress'] . '%';
-            break;
-
-        case "damage":
-            $raid_stat = "поврежден!";
-            break;
-
-        case "normal":
-            $raid_stat = "восстановлен!";
-            break;
-
-        case "no_exist":
-            $raid_stat = "отсутствует";
-            break;
-
-        default:
-            return;
-        }
-
-        $text = sprintf("RAID1: %s", $raid_stat);
-        break;
-
-    case 'external_power':
-        switch ($args['mode']) {
-        case "on":
-            $text = "Внешнее питание восстановлено";
-            break;
-
-        case "off":
-            $text = "Отключено внешнее питание";
-            break;
-        }
-        break;
-
     case 'false_alarm':
         $text = sprintf("Срабатал датчик на порту %s:%d из группы \"%s\".\n" .
                         "(Поскольку сработал только один датчик из данной группы, то скорее всего это ложное срабатывание)\n",
@@ -228,15 +128,6 @@ function telegram_send($type, $args = array())
     case 'guard_enable':
         $text = sprintf("Охрана включена, включил %s с помощью %s.",
                             $args['user'], $args['method']);
-        break;
-
-    case 'inet_switch':
-        $text = sprintf("Интернет преключен на модем %d",
-            $args['modem_num']);
-        break;
-
-    case 'crypto_currancy':
-        $text = sprintf("Цена на %s %f USDT", $args['coin'], $args['price']);
         break;
 
     default:
@@ -353,16 +244,11 @@ function get_global_status()
     preg_match('/up (.+),/U', $ret['log'], $mathes);
     $uptime = $mathes[1];
 
-    $mdstat = get_mdstat();
-
     return ['guard_stat' => $guard_stat,
-            'balance' => $balance,
             'modem_stat' => $modem_stat,
             'uptime' => $uptime,
-            'lighting_stat' => $lighting_stat,
             'padlocks_stat' => $padlocks_stat,
-            'termo_sensors' => $termosensors,
-            'mdadm' => $mdstat];
+            'termo_sensors' => $termosensors];
 }
 
 
@@ -404,20 +290,6 @@ function format_global_status_for_sms($stat)
                                               $stat['guard_stat']['user_name']);
     }
 
-    if (isset($stat['lighting_stat'])) {
-        foreach ($stat['lighting_stat'] as $row) {
-            switch ($row['state']) {
-            case 0:
-                $mode = "откл.";
-                break;
-
-            case 1:
-                $mode = "вкл.";
-                break;
-            }
-            $text .= sprintf("Освещение '%s': %s, ", $row['name'], $mode);
-        }
-    }
     if (isset($stat['padlocks_stat'])) {
         foreach ($stat['padlocks_stat'] as $row) {
             switch ($row['state']) {
@@ -431,31 +303,6 @@ function format_global_status_for_sms($stat)
             }
             $text .= sprintf("Замок '%s': %s, ", $row['name'], $mode);
         }
-    }
-
-    if (isset($stat['mdadm'])) {
-        switch ($stat['mdadm']['mode']) {
-        case "normal":
-            $mode = "исправен";
-            break;
-
-        case "no_exist":
-            $mode = "отсутсвует";
-            break;
-
-        case "resync":
-            $mode = "синхронизируется " . $mdstat['progress'] . '%';
-            break;
-
-        case "recovery":
-            $mode = "восстанавливается " . $mdstat['progress'] . '%';
-            break;
-
-        case "damage":
-            $mode = "поврежден";
-            break;
-        }
-        $text .= sprintf("RAID1: %s, ", $mode);
     }
 
     if (isset($stat['uptime'])) {
@@ -509,21 +356,6 @@ function format_global_status_for_telegram($stat)
                                               $stat['guard_stat']['created']);
     }
 
-    if (isset($stat['lighting_stat'])) {
-        foreach ($stat['lighting_stat'] as $row) {
-            switch ($row['state']) {
-            case 0:
-                $mode = "отключено";
-                break;
-
-            case 1:
-                $mode = "включено";
-                break;
-            }
-            $text .= sprintf("Освещение '%s': %s\n", $row['name'], $mode);
-        }
-    }
-
     if (isset($stat['padlocks_stat'])) {
         foreach ($stat['padlocks_stat'] as $row) {
             switch ($row['state']) {
@@ -537,31 +369,6 @@ function format_global_status_for_telegram($stat)
             }
             $text .= sprintf("Замок '%s': %s\n", $row['name'], $mode);
         }
-    }
-
-    if (isset($stat['mdadm'])) {
-        switch ($stat['mdadm']['mode']) {
-        case "normal":
-            $mode = "исправен";
-            break;
-
-        case "no_exist":
-            $mode = "отсутсвует";
-            break;
-
-        case "resync":
-            $mode = "синхронизируется " . $mdstat['progress'] . '%';
-            break;
-
-        case "recovery":
-            $mode = "восстанавливается " . $mdstat['progress'] . '%';
-            break;
-
-        case "damage":
-            $mode = "поврежден";
-            break;
-        }
-        $text .= sprintf("RAID1: %s\n", $mode);
     }
 
     if (isset($stat['uptime'])) {
