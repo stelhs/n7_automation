@@ -9,6 +9,7 @@ require_once 'common_lib.php';
 require_once 'httpio_lib.php';
 require_once 'guard_lib.php';
 require_once 'player_lib.php';
+require_once 'sequencer_lib.php';
 
 $utility_name = $argv[0];
 
@@ -70,6 +71,15 @@ function main($argv)
             $ret = run_cmd('./padlock.php open');
             pnotice("open all padlocks: %s\n", $ret['log']);
 
+            // enable well pump
+            httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 1);
+
+            // two beep by sirena
+            $io_port = conf_guard()['sirena_io_port'];
+            sequncer_stop($io_port['io'], $io_port['port']);
+            sequncer_start($io_port['io'], $io_port['port'],
+                array(100, 100, 100, 0));
+
             $state_id = db()->insert('guard_states',
                                     ['state' => 'sleep',
                                      'user_id' => $user_id,
@@ -118,6 +128,9 @@ function main($argv)
             $ret = run_cmd('./padlock.php close');
             perror("close all padlocks: %s\n", $ret['log']);
 
+            // disable well pump
+            httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 0);
+
             // check for incorrect sensors value state
             $zones = conf_guard()['zones'];
             $ignore_zones_list = [];
@@ -144,6 +157,18 @@ function main($argv)
                 run_cmd(sprintf('./text_spech.php \'%s\' 0', $text));
                 player_start(['sounds/text.wav'], 75);
             }
+
+            $io_port = conf_guard()['sirena_io_port'];
+            sequncer_stop($io_port['io'], $io_port['port']);
+            if (!count($ignore_zones_list)) {
+                // one beep by sirena
+                sequncer_start($io_port['io'], $io_port['port'], array(200, 0));
+            } else {
+                // two beep by sirena
+                sequncer_start($io_port['io'], $io_port['port'],
+                               array(200, 200, 1000, 0));
+            }
+
 
             $ignore_zones_list_id = [];
             foreach ($ignore_zones_list as $zone)

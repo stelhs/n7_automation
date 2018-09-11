@@ -2,7 +2,7 @@
 
 require_once '/usr/local/lib/php/os.php';
 
-define("PID_DIR", getenv('HOME') . '/');
+@define("PID_DIR", getenv('HOME') . '/');
 
 function sequncer_start($io_name, $port, $sequence)
 {

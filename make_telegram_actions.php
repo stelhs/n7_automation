@@ -24,7 +24,19 @@ $commands = [
                  'script' => 'stat_cmd.php'],
 
                 ['cmd' => ['скажи', 'tell'],
-                    'script' => 'tell_cmd.php'],
+                 'script' => 'tell_cmd.php', 'wr' => 1],
+
+                ['cmd' => ['включи автоматику бака'],
+                 'script' => 'automatic_fill_tank_cmd.php', 'args' => 1],
+
+                ['cmd' => ['отключи автоматику бака'],
+                 'script' => 'automatic_fill_tank_cmd.php', 'args' => 0, 'wr' => 1],
+
+                ['cmd' => ['открой кран бака'],
+                 'script' => 'valve_tank_cmd.php', 'args' => 1],
+
+                ['cmd' => ['закрой кран бака'],
+                 'script' => 'valve_tank_cmd.php', 'args' => 0],
 ];
 
 function mk_help()

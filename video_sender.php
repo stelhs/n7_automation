@@ -63,7 +63,7 @@ function main($argv)
                 }
 
                 run_cmd(sprintf("./telegram.php msg_send_all 'Видео запись события %d: Камера %d:\n http://sr38.org/plato_marazm/alarm_video/%s'",
-                                $cam['id'], $alarm_id, $server_filename));
+                                    $alarm_id, $cam['id'], $server_filename));
             }
         }
         run_cmd(sprintf("./telegram.php msg_send_all 'Процесс загрузки видео по событию %d завершен'",

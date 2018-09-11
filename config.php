@@ -48,7 +48,7 @@ function conf_guard()
                                                    'port' => 4,
                                                    'normal_state' => 1]]
                                 ],
-                                ['id' => '3',
+                             /*   ['id' => '3',
                                     'name' => 'Внешняя сигнализация',
                                     'diff_interval' => 10,
                                     'alarm_time' => 5,
@@ -56,8 +56,10 @@ function conf_guard()
                                     'sensors' => [['io' => 'usio1',
                                                    'port' => 9,
                                                    'normal_state' => 0]]
-                                ]
+                                ]*/
                             ],
+                 'pump_well_io_port' => ['io' => "usio1", "port" => 7],
+                 'sirena_io_port' => ['io' => "usio1", "port" => 3],
                  'ready_set_interval' => 30, /* in seconds */
 			     'light_ready_timeout' => 30 * 60, /* in seconds */
 			     'light_sleep_timeout' => 30 * 60, /* in seconds */
@@ -119,3 +121,23 @@ function conf_street_light()
     return [];
 }
 
+function conf_valves()
+{
+    return [
+        'tank' => ['name' => 'tank',
+                   'open_out_port' => ['io' => 'usio1', 'port' => 6],
+                   'close_out_port' => ['io' => 'usio1', 'port' => 5],
+                   'open_in_port' => ['io' => 'usio1', 'port' => 7],
+                   'close_in_port' => ['io' => 'usio1', 'port' => 8],
+        ],
+    ];
+}
+
+function conf_tank()
+{
+    return ['enabled' => true,
+            'top_float_port' => ['io' => 'usio1', 'port' => 5],
+            'bottom_float_port' => ['io' => 'usio1', 'port' => 6],
+            'valve_name' => 'tank',
+    ];
+}
