@@ -5,6 +5,8 @@ require_once '/usr/local/lib/php/common.php';
 require_once 'config.php';
 require_once 'modem3g.php';
 require_once 'httpio_lib.php';
+require_once 'valve_lib.php';
+require_once 'guard_lib.php';
 
 
 function db()
@@ -244,11 +246,22 @@ function get_global_status()
     preg_match('/up (.+),/U', $ret['log'], $mathes);
     $uptime = $mathes[1];
 
+
+    $well_pump_state = httpio(conf_guard()['pump_well_io_port']['io'])->relay_get_state(conf_guard()['pump_well_io_port']['port']);
+
+    $automatic_fill_tank_stat = !is_automatic_fill_tank_disable();
+
+    $valve_tank = new Valve(conf_valves()['tank']);
+
     return ['guard_stat' => $guard_stat,
             'modem_stat' => $modem_stat,
             'uptime' => $uptime,
             'padlocks_stat' => $padlocks_stat,
-            'termo_sensors' => $termosensors];
+            'termo_sensors' => $termosensors,
+            'well_pump' => $well_pump_state,
+            'automatic_fill_tank' => $automatic_fill_tank_stat,
+            'valve_tank' => $valve_tank->status(),
+    ];
 }
 
 
@@ -384,6 +397,50 @@ function format_global_status_for_telegram($stat)
             $text .= sprintf("Температура %s: %.01f градусов\n", $sensor['name'], $sensor['value']);
     }
 
+    if (isset($stat['well_pump'])) {
+        switch ($stat['well_pump']) {
+            case 0:
+                $mode = "отключен";
+                break;
+
+            case 1:
+                $mode = "включен";
+                break;
+        }
+        $text .= sprintf("Скваженный насос: %s\n", $mode);
+    }
+
+    if (isset($stat['automatic_fill_tank'])) {
+        switch ($stat['automatic_fill_tank']) {
+            case TRUE:
+                $mode = "включена";
+                break;
+
+            case FALSE:
+                $mode = "отключена";
+                break;
+        }
+        $text .= sprintf("Автоматика бака: %s\n", $mode);
+    }
+
+    if (isset($stat['valve_tank'])) {
+        switch($stat['valve_tank']) {
+        case "not_defined":
+            $mode = "в непонятках";
+            break;
+        case "error":
+            $mode = "полное гавно";
+            break;
+        case "opened":
+            $mode = "открыт";
+            break;
+        case "close":
+            $mode = "закрыт";
+            break;
+        }
+        $text .= sprintf("Кран бака: %s\n", $mode);
+    }
+
     return $text;
 }
 
@@ -460,3 +517,11 @@ function get_stored_io_states()
 
     return $rows;
 }
+
+
+define("AUTOMATIC_FILL_TANK_DISABLED_FILE", "/var/run/automatic_fill_tank_disabled");
+function is_automatic_fill_tank_disable()
+{
+    return file_exists(AUTOMATIC_FILL_TANK_DISABLED_FILE);
+}
+

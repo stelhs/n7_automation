@@ -7,19 +7,14 @@ require_once 'config.php';
 require_once 'httpio_lib.php';
 require_once 'valve_lib.php';
 require_once 'guard_lib.php';
+require_once 'common_lib.php';
 
 define("PUMP_WELL_ENABLED_FILE", "/tmp/well_pump");
-define("AUTOMATIC_FILL_TANK_DISABLED_FILE", "/var/run/automatic_fill_tank_disabled");
 
 
 function is_filling_enable()
 {
     return file_exists(PUMP_WELL_ENABLED_FILE);
-}
-
-function is_automatic_fill_tank_disable()
-{
-    return file_exists(AUTOMATIC_FILL_TANK_DISABLED_FILE);
 }
 
 function disable_automatic_fill_tank()

@@ -36,7 +36,13 @@ $commands = [
                  'script' => 'valve_tank_cmd.php', 'args' => 1],
 
                 ['cmd' => ['закрой кран бака'],
-                 'script' => 'valve_tank_cmd.php', 'args' => 0],
+                 'script' => 'valve_tank_cmd.php', 'args' => 0, 'wr' => 1],
+
+                ['cmd' => ['видео'],
+                 'script' => 'video_cmd.php', 'args' => 0],
+
+                ['cmd' => ['видео по событию'],
+                 'script' => 'video_by_action_cmd.php', 'args' => 0],
 ];
 
 function mk_help()
