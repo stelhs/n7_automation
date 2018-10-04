@@ -224,7 +224,10 @@ function main($argv)
 
         // run sirena
         $zone = zone_get_by_io_id($action['zone_id']);
-        player_start('sounds/siren.wav', 100, $zone['alarm_time']);
+        //player_start('sounds/siren.wav', 100, $zone['alarm_time']);
+        sequncer_stop(conf_guard()['sirena_io_port']);
+        sequncer_start(conf_guard()['sirena_io_port'],
+            array($zone['alarm_time'] * 1000, 0));
 
         // run lighter if night
         $day_night = get_day_night();
