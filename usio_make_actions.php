@@ -26,6 +26,7 @@ function main($argv) {
         break;
 
     case 'restart':
+        run_cmd(sprintf("./telegram.php msg_send_all \"%s\"", "USIO1 перезапущен, состояние портов актуализированно"));
         $states_list = get_stored_io_states();
         foreach ($states_list as $row)
             httpio($row['io_name'])->relay_set_state($row['port'], $row['state']);
