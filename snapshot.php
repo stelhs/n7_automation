@@ -14,7 +14,7 @@ function print_help()
              "\tMake cameras snapshots into <path_for_store>.\n" .
              "\tResult files name used prefix <prefix>\n" .
              "\t\tExample:\n" .
-             "\t\t\t $utility_name /var/spool/guard_system/images 12_\n" .
+             "\t\t\t $utility_name /var/spool/sr90_automation/images/alarm_actions 12_\n" .
              "\t\tStored files into this directory with names: 12_cam1.jpg, 12_cam2.jpg,\n" .
     	"\n\n";
 }

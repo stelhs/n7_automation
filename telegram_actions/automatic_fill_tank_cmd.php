@@ -4,11 +4,10 @@
 require_once '/usr/local/lib/php/common.php';
 require_once 'config.php';
 require_once 'guard_lib.php';
+require_once 'common_lib.php';
 require_once 'telegram_api.php';
 require_once 'config.php';
 
-
-define("AUTOMATIC_FILL_TANK_DISABLED_FILE", "/var/run/automatic_fill_tank_disabled");
 
 function enable_automatic_fill_tank()
 {

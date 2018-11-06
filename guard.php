@@ -225,9 +225,10 @@ function main($argv)
         // run sirena
         $zone = zone_get_by_io_id($action['zone_id']);
         //player_start('sounds/siren.wav', 100, $zone['alarm_time']);
-        sequncer_stop(conf_guard()['sirena_io_port']);
-        sequncer_start(conf_guard()['sirena_io_port'],
-            array($zone['alarm_time'] * 1000, 0));
+        sequncer_stop(conf_guard()['sirena_io_port']['io'], conf_guard()['sirena_io_port']['port']);
+        sequncer_start(conf_guard()['sirena_io_port']['io'],
+                       conf_guard()['sirena_io_port']['port'],
+                       [$zone['alarm_time'] * 1000, 0]);
 
         // run lighter if night
         $day_night = get_day_night();
@@ -240,7 +241,7 @@ function main($argv)
         }
 
         // make snapshots
-        $ret = run_cmd(sprintf('./snapshot.php %s %d_',
+        $ret = run_cmd(sprintf("./snapshot.php '%s' %d_",
                         conf_guard()['alarm_snapshot_dir'], $guard_action_id));
         pnotice("make snapshots: %s\n", $ret['log']);
 
@@ -255,10 +256,10 @@ function main($argv)
         // send videos
         $row = db()->query('SELECT UNIX_TIMESTAMP(created) as timestamp ' .
                            'FROM guard_actions WHERE id = ' . $guard_action_id);
-        run_cmd(sprintf("./video_sender.php alarm %d %d",
+/*        run_cmd(sprintf("./video_sender.php alarm %d %d",
                         $guard_action_id,
                         $row['timestamp']),
-                        true);
+                        true);*/
 
         // send SMS
         sms_send('alarm',

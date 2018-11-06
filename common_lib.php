@@ -400,14 +400,14 @@ function format_global_status_for_telegram($stat)
     if (isset($stat['well_pump'])) {
         switch ($stat['well_pump']) {
             case 0:
-                $mode = "отключен";
+                $mode = "отключена";
                 break;
 
             case 1:
-                $mode = "включен";
+                $mode = "включена";
                 break;
         }
-        $text .= sprintf("Скваженный насос: %s\n", $mode);
+        $text .= sprintf("Насосная система: %s\n", $mode);
     }
 
     if (isset($stat['automatic_fill_tank'])) {
@@ -519,7 +519,7 @@ function get_stored_io_states()
 }
 
 
-define("AUTOMATIC_FILL_TANK_DISABLED_FILE", "/var/run/automatic_fill_tank_disabled");
+define("AUTOMATIC_FILL_TANK_DISABLED_FILE", "/var/local/automatic_fill_tank_disabled");
 function is_automatic_fill_tank_disable()
 {
     return file_exists(AUTOMATIC_FILL_TANK_DISABLED_FILE);
