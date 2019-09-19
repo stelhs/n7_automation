@@ -71,8 +71,9 @@ function main($argv)
             $ret = run_cmd('./padlock.php open');
             pnotice("open all padlocks: %s\n", $ret['log']);
 
-            // enable well pump
-            httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 1);
+            // enable well pump system
+ //           httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 1);
+            run_cmd(sprintf("./pump_system.php enable"));		
 
             // two beep by sirena
             $io_port = conf_guard()['sirena_io_port'];
@@ -128,8 +129,9 @@ function main($argv)
             $ret = run_cmd('./padlock.php close');
             perror("close all padlocks: %s\n", $ret['log']);
 
-            // disable well pump
-            httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 0);
+            // disable well pump system
+//            httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 0);
+            run_cmd(sprintf("./pump_system.php disable"));
 
             // check for incorrect sensors value state
             $zones = conf_guard()['zones'];

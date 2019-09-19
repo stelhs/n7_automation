@@ -140,7 +140,7 @@ function conf_valves()
 function conf_tank()
 {
     return ['enabled' => true,
-            'top_float_port' => ['io' => 'usio1', 'port' => 5],
+            'top_float_port' => ['io' => 'usio1', 'port' => 2],
             'bottom_float_port' => ['io' => 'usio1', 'port' => 6],
             'valve_name' => 'tank',
     ];

@@ -71,6 +71,7 @@ function main($argv) {
     $guard_state = get_global_status()['guard_stat']['state'];
 
     if (is_automatic_fill_tank_disable()) {
+	printf("filling tank is disabled\n");
         if (is_filling_enable())
             filling_disable($valve);
         return 0;
@@ -78,6 +79,7 @@ function main($argv) {
 
     // tank is filling now?
     if (is_filling_enable()) {
+	printf("filling enabled\n");
         $pump_state = httpio(conf_guard()['pump_well_io_port']['io'])->relay_get_state(conf_guard()['pump_well_io_port']['port']);
         if ($pump_state == 0)
             httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 1);
