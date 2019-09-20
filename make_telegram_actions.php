@@ -38,11 +38,11 @@ $commands = [
                 ['cmd' => ['закрой кран бака'],
                  'script' => 'valve_tank_cmd.php', 'args' => 0, 'wr' => 1],
 
-                ['cmd' => ['видео'],
-                 'script' => 'video_cmd.php', 'args' => 0],
+                ['cmd' => ['переключи на основной модем', 'modem 2'],
+                 'script' => 'modem.php', 'args' => 'modem_2'],
 
-                ['cmd' => ['видео по событию'],
-                 'script' => 'video_by_action_cmd.php', 'args' => 0],
+                ['cmd' => ['переключи на вспомогательный модем', 'modem 1'],
+                 'script' => 'modem.php', 'args' => 'modem_1'],
 ];
 
 function mk_help()

@@ -103,7 +103,7 @@ function conf_termo_sensors()
 
 function conf_modem()
 {
-    return array('ip_addr' => '192.168.1.1');
+    return array('ip_addr' => '192.168.8.1');
 }
 
 function conf_telegram_bot()
