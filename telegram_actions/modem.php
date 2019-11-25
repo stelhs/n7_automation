@@ -23,14 +23,14 @@ function main($argv) {
 
     switch ($cmd) {
     case 'modem_2':
-        $msg = "Готово. Подключен основной модем.";
+        $msg = "Пробую переключить на основной модем. Ожидаем...";
         run_cmd("./inet_switch.sh 2");
         run_cmd("killall -9 ssh");
         $telegram->send_message($chat_id, $msg, $msg_id);
         break;
 
     case 'modem_1':
-        $msg = "Готово. Подключен вспомогательный модем.";
+        $msg = "Пробую переключить на вспомогательный модем. Ожидаем...";
         run_cmd("./inet_switch.sh 1");
         run_cmd("killall -9 ssh");
         $telegram->send_message($chat_id, $msg, $msg_id);

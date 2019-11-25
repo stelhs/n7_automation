@@ -18,6 +18,14 @@ case "$1" in
                 iptables -t nat -A POSTROUTING -o eth4 -j SNAT --to-source 192.168.8.2
 	;;
 	
+	current)
+		CURR_IP=`route -n | head -n 3 | tail -n 1 | awk '{print $2}'`
+                [ "$CURR_IP" = "192.168.1.1" ] && echo "current modem: 1" && exit 1
+		[ "$CURR_IP" = "192.168.8.1" ] && echo "current modem: 2" && exit 2
+                echo "current modem: unknown"
+		exit -1
+	;;
+
 	*)
 		echo "Incorrect modem number"
 	;;

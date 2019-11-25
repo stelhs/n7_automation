@@ -241,6 +241,7 @@ function get_global_status()
     $lighting_stat = get_street_light_stat();
     $padlocks_stat = get_padlocks_stat();
     $termosensors = get_termosensors_stat();
+    $curr_inet_modem_num = get_cur_inet_modem_num();
 
     $ret = run_cmd('uptime');
     preg_match('/up (.+),/U', $ret['log'], $mathes);
@@ -261,6 +262,7 @@ function get_global_status()
             'well_pump' => $well_pump_state,
             'automatic_fill_tank' => $automatic_fill_tank_stat,
             'valve_tank' => $valve_tank->status(),
+            'curr_inet_modem' => $curr_inet_modem_num,
     ];
 }
 
@@ -441,6 +443,21 @@ function format_global_status_for_telegram($stat)
         $text .= sprintf("Кран бака: %s\n", $mode);
     }
 
+    if (isset($stat['curr_inet_modem'])) {
+        switch($stat['curr_inet_modem']) {
+        case "3":
+            $mode = "не определен";
+            break;
+        case "1":
+            $mode = "резервный";
+            break;
+        case "2":
+            $mode = "основной";
+            break;
+        }
+        $text .= sprintf("Текущий модем: %s\n", $mode);
+    }
+
     return $text;
 }
 
@@ -494,6 +511,12 @@ function get_termosensors_stat()
                        'value' => $row['temperaure']];
     }
     return $list;
+}
+
+function get_cur_inet_modem_num()
+{
+    $ret = run_cmd("./inet_switch.sh current");
+    return $ret['rc'];
 }
 
 function get_stored_io_states()
