@@ -23,26 +23,23 @@ $commands = [
                 ['cmd' => ['статус', 'stat'],
                  'script' => 'stat_cmd.php'],
 
-                ['cmd' => ['скажи', 'tell'],
-                 'script' => 'tell_cmd.php', 'wr' => 1],
-
                 ['cmd' => ['включи автоматику бака'],
                  'script' => 'automatic_fill_tank_cmd.php', 'args' => 1],
 
                 ['cmd' => ['отключи автоматику бака'],
                  'script' => 'automatic_fill_tank_cmd.php', 'args' => 0, 'wr' => 1],
 
-                ['cmd' => ['открой кран бака'],
-                 'script' => 'valve_tank_cmd.php', 'args' => 1],
-
-                ['cmd' => ['закрой кран бака'],
-                 'script' => 'valve_tank_cmd.php', 'args' => 0, 'wr' => 1],
-
                 ['cmd' => ['переключи на основной модем', 'modem 2'],
                  'script' => 'modem.php', 'args' => 'modem_2'],
 
-                ['cmd' => ['переключи на вспомогательный модем', 'modem 1'],
+                ['cmd' => ['переключи на дополнительный модем', 'modem 1'],
                  'script' => 'modem.php', 'args' => 'modem_1'],
+
+                ['cmd' => ['включи насос в душ', 'shower_pump 1'],
+                 'script' => 'shower_pump.php', 'args' => 'enable'],
+
+                ['cmd' => ['отключи насос в душ', 'shower_pump 0'],
+                 'script' => 'shower_pump.php', 'args' => 'disable'],
 ];
 
 function mk_help()

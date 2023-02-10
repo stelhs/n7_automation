@@ -72,8 +72,8 @@ function main($argv)
             pnotice("open all padlocks: %s\n", $ret['log']);
 
             // enable well pump system
- //           httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 1);
-            run_cmd(sprintf("./pump_system.php enable"));		
+ //           httpio(conf_guard()['home_water_io_port']['io'])->relay_set_state(conf_guard()['home_water_io_port']['port'], 1);
+            run_cmd(sprintf("./pump_system.php enable"));
 
             // two beep by sirena
             $io_port = conf_guard()['sirena_io_port'];
@@ -130,7 +130,7 @@ function main($argv)
             perror("close all padlocks: %s\n", $ret['log']);
 
             // disable well pump system
-//            httpio(conf_guard()['pump_well_io_port']['io'])->relay_set_state(conf_guard()['pump_well_io_port']['port'], 0);
+//            httpio(conf_guard()['home_water_io_port']['io'])->relay_set_state(conf_guard()['home_water_io_port']['port'], 0);
             run_cmd(sprintf("./pump_system.php disable"));
 
             // check for incorrect sensors value state
@@ -253,7 +253,7 @@ function main($argv)
 
         // send photos
         $ret = run_cmd(sprintf("./image_sender.php alarm %d", $guard_action_id));
-        pnotice("send images to sr38: %s\n", $ret['log']);
+        pnotice("send images to sr90: %s\n", $ret['log']);
 
         // send videos
         $row = db()->query('SELECT UNIX_TIMESTAMP(created) as timestamp ' .

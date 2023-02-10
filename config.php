@@ -58,7 +58,8 @@ function conf_guard()
                                                    'normal_state' => 0]]
                                 ]*/
                             ],
-                 'pump_well_io_port' => ['io' => "usio1", "port" => 7],
+                 'home_water_io_port' => ['io' => "usio1", "port" => 7],
+                 'shower_pump_io_port' => ['io' => "usio1", "port" => 6],
                  'sirena_io_port' => ['io' => "usio1", "port" => 3],
                  'ready_set_interval' => 30, /* in seconds */
 			     'light_ready_timeout' => 30 * 60, /* in seconds */
@@ -140,7 +141,7 @@ function conf_valves()
 function conf_tank()
 {
     return ['enabled' => true,
-            'top_float_port' => ['io' => 'usio1', 'port' => 2],
+            'top_float_port' => ['io' => 'usio1', 'port' => 5],
             'bottom_float_port' => ['io' => 'usio1', 'port' => 6],
             'valve_name' => 'tank',
     ];

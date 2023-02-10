@@ -248,20 +248,23 @@ function get_global_status()
     $uptime = $mathes[1];
 
 
-    $well_pump_state = httpio(conf_guard()['pump_well_io_port']['io'])->relay_get_state(conf_guard()['pump_well_io_port']['port']);
+    $home_water_state = httpio(conf_guard()['home_water_io_port']['io'])->relay_get_state(conf_guard()['home_water_io_port']['port']);
+
+    $shower_pump_state = httpio(conf_guard()['shower_pump_io_port']['io'])->relay_get_state(conf_guard()['shower_pump_io_port']['port']);
 
     $automatic_fill_tank_stat = !is_automatic_fill_tank_disable();
 
-    $valve_tank = new Valve(conf_valves()['tank']);
+//    $valve_tank = new Valve(conf_valves()['tank']);
 
     return ['guard_stat' => $guard_stat,
             'modem_stat' => $modem_stat,
             'uptime' => $uptime,
             'padlocks_stat' => $padlocks_stat,
             'termo_sensors' => $termosensors,
-            'well_pump' => $well_pump_state,
+            'home_water_state' => $home_water_state,
+            'shower_pump_state' => $shower_pump_state,
             'automatic_fill_tank' => $automatic_fill_tank_stat,
-            'valve_tank' => $valve_tank->status(),
+     //       'valve_tank' => $valve_tank->status(),
             'curr_inet_modem' => $curr_inet_modem_num,
     ];
 }
@@ -399,8 +402,8 @@ function format_global_status_for_telegram($stat)
             $text .= sprintf("Температура %s: %.01f градусов\n", $sensor['name'], $sensor['value']);
     }
 
-    if (isset($stat['well_pump'])) {
-        switch ($stat['well_pump']) {
+    if (isset($stat['home_water_state'])) {
+        switch ($stat['home_water_state']) {
             case 0:
                 $mode = "отключена";
                 break;
@@ -409,7 +412,20 @@ function format_global_status_for_telegram($stat)
                 $mode = "включена";
                 break;
         }
-        $text .= sprintf("Насосная система: %s\n", $mode);
+        $text .= sprintf("Насосная система в доме: %s\n", $mode);
+    }
+
+    if (isset($stat['shower_pump_state'])) {
+        switch ($stat['shower_pump_state']) {
+            case 0:
+                $mode = "отключен";
+                break;
+
+            case 1:
+                $mode = "включен";
+                break;
+        }
+        $text .= sprintf("Насос в душе: %s\n", $mode);
     }
 
     if (isset($stat['automatic_fill_tank'])) {
@@ -449,7 +465,7 @@ function format_global_status_for_telegram($stat)
             $mode = "не определен";
             break;
         case "1":
-            $mode = "резервный";
+            $mode = "дополнительный";
             break;
         case "2":
             $mode = "основной";

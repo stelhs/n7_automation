@@ -40,7 +40,7 @@ function main($argv)
     switch ($cmd) {
     case "enable":
     case "disable":
-        $io = conf_guard()['pump_well_io_port'];
+        $io = conf_guard()['home_water_io_port'];
         $new_port_state = $cmd == "enable" ? 1 : 0;
 
         $ok = false;
@@ -48,11 +48,11 @@ function main($argv)
         $rc = httpio($io['io'])->relay_set_state($io['port'], $new_port_state);
         if ($rc < 0)
             perror("Can't set relay state %d\n", $io['port']);
-        
+
         return 0;
 
     case "stat":
-        $io = conf_guard()['pump_well_io_port'];
+        $io = conf_guard()['home_water_io_port'];
         $ret = httpio($io['io'])->relay_get_state($io['port']);
         if ($ret < 0) {
             perror("Can't get relay state %d\n", $io['port']);
@@ -62,7 +62,7 @@ function main($argv)
         return 0;
 
     case "restore_last_state":
-        $io = conf_guard()['pump_well_io_port'];
+        $io = conf_guard()['home_water_io_port'];
         $result = db()->query(sprintf("SELECT state FROM io_output_actions " .
                                       "WHERE io_name='%s' AND port=%d " .
                                       "ORDER BY id DESC",
