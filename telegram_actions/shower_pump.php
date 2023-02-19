@@ -8,13 +8,16 @@ require_once 'common_lib.php';
 require_once 'telegram_api.php';
 require_once 'config.php';
 
+define("PUMP_WELL_ENABLED_FILE", "/tmp/well_pump");
 
-function shower_pump_enable() {
+function shower_pump_start() {
     httpio(conf_guard()['shower_pump_io_port']['io'])->relay_set_state(conf_guard()['shower_pump_io_port']['port'], 1);
+    file_put_contents(PUMP_WELL_ENABLED_FILE, time());
 }
 
-function shower_pump_disable() {
+function shower_pump_stop() {
     httpio(conf_guard()['shower_pump_io_port']['io'])->relay_set_state(conf_guard()['shower_pump_io_port']['port'], 0);
+    unlink(PUMP_WELL_ENABLED_FILE);
 }
 
 function main($argv) {
@@ -40,14 +43,18 @@ function main($argv) {
     }
 
     if ($cmd == 'enable') {
-        shower_pump_enable();
+        shower_pump_start();
         $telegram->send_message($chat_id, "Насос в душе включен", $msg_id);
         return 0;
     }
 
-    $telegram->send_message($chat_id, "Насос в душе отключен", $msg_id);
-    shower_pump_disable();
-    return 0;
+    if ($cmd == 'disable') {
+        shower_pump_stop();
+        $telegram->send_message($chat_id, "Насос в душе отключен", $msg_id);
+        return 0;
+    }
+
+    $telegram->send_message($chat_id, "Неверная команда", $msg_id);
 }
 
 

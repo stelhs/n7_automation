@@ -12,7 +12,7 @@ require_once 'common_lib.php';
 define("PUMP_WELL_ENABLED_FILE", "/tmp/well_pump");
 
 
-function is_filling_enable()
+function is_filling_started()
 {
     return file_exists(PUMP_WELL_ENABLED_FILE);
 }
@@ -23,33 +23,31 @@ function disable_automatic_fill_tank()
     run_cmd(sprintf("./telegram.php msg_send_all 'Автоматика наполнения бака отключена'"));
 }
 
-function filling_enable()
+function filling_start()
 {
     file_put_contents(PUMP_WELL_ENABLED_FILE, time());
     httpio(conf_guard()['shower_pump_io_port']['io'])->relay_set_state(conf_guard()['shower_pump_io_port']['port'], 1);
+    printf("filling started\n");
 }
 
-function filling_disable($valve)
+function filling_stop()
 {
     httpio(conf_guard()['shower_pump_io_port']['io'])->relay_set_state(conf_guard()['shower_pump_io_port']['port'], 0);
     unlink(PUMP_WELL_ENABLED_FILE);
+    printf("filling stopped\n");
 }
 
 
 function main($argv) {
-    global $guard_state;
-    $guard_state = get_global_status()['guard_stat']['state'];
-
     if (is_automatic_fill_tank_disable()) {
-	printf("filling tank is disabled\n");
-        if (is_filling_enable())
-            filling_disable();
+	    printf("filling tank is disabled\n");
+     /*   if (is_filling_started())
+            filling_stop();*/
         return 0;
     }
 
     // tank is filling now?
-    if (is_filling_enable()) {
-	printf("filling enabled\n");
+    if (is_filling_started()) {
         $start_time = file_get_contents(PUMP_WELL_ENABLED_FILE);
         if ((time() - $start_time) > (1 * 60 * 60)) {
             run_cmd(sprintf("./telegram.php msg_send_all 'Отключен скваженный насос: За два часа бак не наполнился'"));
@@ -60,14 +58,14 @@ function main($argv) {
         // top float is achieved?
         $top_float_state = httpio(conf_tank()['top_float_port']['io'])->input_get_state(conf_tank()['top_float_port']['port']);
         if ($top_float_state == 1)
-            filling_disable();
+            filling_stop();
         return 0;
     }
 
     // bottom float is not achieved?
     $bottom_float_state = httpio(conf_tank()['bottom_float_port']['io'])->input_get_state(conf_tank()['bottom_float_port']['port']);
     if ($bottom_float_state == 1) {
-        filling_enable();
+        filling_start();
         return 0;
     }
 }
